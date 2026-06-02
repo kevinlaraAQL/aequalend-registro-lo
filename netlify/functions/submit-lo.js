@@ -30,7 +30,7 @@ exports.handler = async (event) => {
         'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ fields, typecast: true })
+      body: JSON.stringify({ fields })
     });
 
     const data = await res.json();

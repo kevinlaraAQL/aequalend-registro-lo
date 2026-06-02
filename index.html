@@ -120,35 +120,6 @@
     input::placeholder, textarea::placeholder { color: #bbb; }
     input:focus, select:focus, textarea:focus { border-color: #BAD534; }
 
-    /* ── Phone with country dial code ── */
-    .phone-wrap {
-      display: flex;
-      align-items: stretch;
-      border: 1.5px solid #e2e2e2;
-      border-radius: 8px;
-      overflow: hidden;
-      transition: border-color 0.15s;
-    }
-    .phone-wrap:focus-within { border-color: #BAD534; }
-    .phone-wrap .dial-prefix {
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      background: #f5f6f7;
-      color: #0C223B;
-      font-size: 15px;
-      font-weight: 600;
-      border-right: 1.5px solid #e2e2e2;
-      white-space: nowrap;
-    }
-    .phone-wrap input[type="tel"] {
-      border: none;
-      border-radius: 0;
-      flex: 1;
-      min-width: 0;
-    }
-    .phone-wrap input[type="tel"]:focus { border: none; }
-
     .select-wrap { position: relative; }
     .select-wrap::after {
       content: '';
@@ -331,22 +302,6 @@
     .photo-status.done      { color: #3a8e3a; font-weight: 500; }
     .photo-status.error     { color: #e74c3c; }
 
-    /* ── Member-type cards ── */
-    .type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .type-card {
-      border: 2px solid #c8c8c8;
-      border-radius: 10px;
-      padding: 16px 14px;
-      cursor: pointer;
-      text-align: center;
-      transition: border-color .15s, background .15s;
-    }
-    .type-card:hover { border-color: #BAD534; }
-    .type-card.selected { border-color: #BAD534; background: #f6fae6; }
-    .tc-title { font-weight: 700; color: #0C223B; font-size: 15px; }
-    .tc-sub   { font-size: 12px; color: #797979; margin-top: 3px; }
-    .type-cards.error .type-card { border-color: #e74c3c; }
-
     /* ── Mobile banner fix (≤ 480px) ── */
     @media (max-width: 480px) {
       .banner { height: auto; }
@@ -378,7 +333,6 @@
       .footer { padding: 0 20px 20px; }
 
       .row, .row-3 { grid-template-columns: 1fr; }
-      .type-cards { grid-template-columns: 1fr; }
 
       input[type="text"],
       input[type="email"],
@@ -425,42 +379,18 @@
     <!-- ══ PAGE 1: Personal Info ══ -->
     <div class="page active" id="page1">
       <div class="page-label">Step 1 of 4</div>
-      <div class="page-title">Let's start with you</div>
-
-      <div class="field">
-        <label>I'm joining Aequalend as <span class="req">*</span></label>
-        <div class="type-cards" id="typeCards">
-          <div class="type-card" id="cardLO" onclick="selectType('LO')">
-            <div class="tc-title">Loan Officer</div>
-            <div class="tc-sub">NMLS-licensed sales role</div>
-          </div>
-          <div class="type-card" id="cardStaff" onclick="selectType('Staff')">
-            <div class="tc-title">Staff Member</div>
-            <div class="tc-sub">Operations, marketing, support…</div>
-          </div>
-        </div>
-        <input type="hidden" name="_memberType" id="memberType">
-      </div>
-
-      <div class="field">
-        <label>Country <span class="req">*</span></label>
-        <div class="select-wrap">
-          <select name="País" id="countrySelect" required onchange="applyCountry()">
-            <!-- Options injected by JS (see buildCountries) -->
-          </select>
-        </div>
-      </div>
+      <div class="page-title">Personal Information</div>
 
       <div class="field">
         <label>Full Name <span class="req">*</span></label>
         <input type="text" name="Nombre completo" placeholder="e.g. María García" required>
       </div>
 
-      <div class="row" id="roleRow">
-        <div class="field lo-only" id="roleLOField">
+      <div class="row">
+        <div class="field">
           <label>Role <span class="req">*</span></label>
           <div class="select-wrap">
-            <select name="Rol" id="rolSelect">
+            <select name="Rol" required>
               <option value="" disabled selected>Select…</option>
               <option value="Loan Officer">Loan Officer</option>
               <option value="Mortgage Loan Officer">Mortgage Loan Officer</option>
@@ -472,29 +402,9 @@
             </select>
           </div>
         </div>
-        <div class="field lo-only" id="nmlsField">
+        <div class="field">
           <label>NMLS # <span class="req">*</span></label>
-          <input type="number" name="NMLS #" id="nmlsInput" placeholder="123456">
-        </div>
-        <div class="field staff-only" id="deptField" style="display:none">
-          <label>Department <span class="req">*</span></label>
-          <div class="select-wrap">
-            <select name="Departamento" id="deptSelect">
-              <option value="" disabled selected>Select…</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Operations">Operations</option>
-              <option value="Processing">Processing</option>
-              <option value="IT">IT</option>
-              <option value="HR">HR</option>
-              <option value="Finance">Finance</option>
-              <option value="Compliance">Compliance</option>
-              <option value="Executive">Executive</option>
-            </select>
-          </div>
-        </div>
-        <div class="field staff-only" id="titleField" style="display:none">
-          <label>Job Title <span class="req">*</span></label>
-          <input type="text" name="Rol" id="rolInput" placeholder="e.g. Marketing Coordinator">
+          <input type="number" name="NMLS #" placeholder="123456" required>
         </div>
       </div>
 
@@ -505,10 +415,7 @@
         </div>
         <div class="field">
           <label>Phone <span class="req">*</span></label>
-          <div class="phone-wrap">
-            <span class="dial-prefix" id="dialPrefix">+52</span>
-            <input type="tel" name="Teléfono" id="phoneInput" placeholder="55 1234 5678" required>
-          </div>
+          <input type="tel" name="Teléfono" placeholder="(555) 000-0000" required>
         </div>
       </div>
 
@@ -523,7 +430,7 @@
         </div>
       </div>
 
-      <div class="field lo-only" id="licStatesField">
+      <div class="field">
         <label>Licensed States <span class="opt">optional</span></label>
         <input type="text" name="Licensed States" placeholder="e.g. TX, FL, CA">
       </div>
@@ -569,12 +476,12 @@
           <input type="text" name="City" placeholder="Houston">
         </div>
         <div class="field">
-          <label id="stateLabel">State</label>
-          <input type="text" name="State" id="stateInput" placeholder="TX" maxlength="2">
+          <label>State</label>
+          <input type="text" name="State" placeholder="TX" maxlength="2">
         </div>
         <div class="field">
-          <label id="zipLabel">Zip Code</label>
-          <input type="text" name="Zip Code" id="zipInput" placeholder="77001">
+          <label>Zip Code</label>
+          <input type="text" name="Zip Code" placeholder="77001">
         </div>
       </div>
 
@@ -754,16 +661,8 @@
 
   function validatePage(n) {
     const page = document.getElementById('page' + n);
-    let valid = true;
-
-    // Page 1 must have a member type selected
-    if (n === 1 && !document.getElementById('memberType').value) {
-      document.getElementById('typeCards').classList.add('error');
-      document.getElementById('typeCards').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      valid = false;
-    }
-
     const required = page.querySelectorAll('[required]');
+    let valid = true;
     required.forEach(el => {
       if (!el.value.trim()) {
         el.style.borderColor = '#e74c3c';
@@ -772,11 +671,8 @@
       }
     });
     if (!valid) {
-      const firstBad = [...required].find(el => !el.value.trim());
-      if (firstBad) {
-        firstBad.focus();
-        firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      required[0].focus();
+      required[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     return valid;
   }
@@ -789,144 +685,6 @@
   function prevPage(n) {
     showPage(n - 1);
   }
-
-  // ── Toggle a field's "required" attribute ──
-  function setReq(id, on) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (on) el.setAttribute('required', '');
-    else    el.removeAttribute('required');
-  }
-
-  // ── Member type: Loan Officer vs Staff ──
-  function selectType(type) {
-    document.getElementById('memberType').value = type;
-    const isLO = (type === 'LO');
-
-    document.getElementById('cardLO').classList.toggle('selected', isLO);
-    document.getElementById('cardStaff').classList.toggle('selected', !isLO);
-    document.getElementById('typeCards').classList.remove('error');
-
-    // Show/hide conditional fields
-    document.querySelectorAll('.lo-only').forEach(el => el.style.display = isLO ? '' : 'none');
-    document.querySelectorAll('.staff-only').forEach(el => el.style.display = isLO ? 'none' : '');
-
-    // Required only on the visible side
-    setReq('rolSelect', isLO);
-    setReq('nmlsInput', isLO);
-    setReq('deptSelect', !isLO);
-    setReq('rolInput', !isLO);
-
-    // Clear the hidden side's values so they aren't submitted by mistake
-    if (isLO) {
-      document.getElementById('rolInput').value = '';
-      document.getElementById('deptSelect').value = '';
-    } else {
-      document.getElementById('rolSelect').value = '';
-      document.getElementById('nmlsInput').value = '';
-    }
-  }
-
-  // ── Full country list (name, ISO, dial code) ──
-  const COUNTRIES = [
-    ["Afghanistan","AF","+93"],["Albania","AL","+355"],["Algeria","DZ","+213"],["Andorra","AD","+376"],
-    ["Angola","AO","+244"],["Antigua and Barbuda","AG","+1"],["Argentina","AR","+54"],["Armenia","AM","+374"],
-    ["Australia","AU","+61"],["Austria","AT","+43"],["Azerbaijan","AZ","+994"],["Bahamas","BS","+1"],
-    ["Bahrain","BH","+973"],["Bangladesh","BD","+880"],["Barbados","BB","+1"],["Belarus","BY","+375"],
-    ["Belgium","BE","+32"],["Belize","BZ","+501"],["Benin","BJ","+229"],["Bhutan","BT","+975"],
-    ["Bolivia","BO","+591"],["Bosnia and Herzegovina","BA","+387"],["Botswana","BW","+267"],["Brazil","BR","+55"],
-    ["Brunei","BN","+673"],["Bulgaria","BG","+359"],["Burkina Faso","BF","+226"],["Burundi","BI","+257"],
-    ["Cambodia","KH","+855"],["Cameroon","CM","+237"],["Canada","CA","+1"],["Cape Verde","CV","+238"],
-    ["Central African Republic","CF","+236"],["Chad","TD","+235"],["Chile","CL","+56"],["China","CN","+86"],
-    ["Colombia","CO","+57"],["Comoros","KM","+269"],["Congo (Brazzaville)","CG","+242"],["Congo (Kinshasa)","CD","+243"],
-    ["Costa Rica","CR","+506"],["Côte d'Ivoire","CI","+225"],["Croatia","HR","+385"],["Cuba","CU","+53"],
-    ["Cyprus","CY","+357"],["Czechia","CZ","+420"],["Denmark","DK","+45"],["Djibouti","DJ","+253"],
-    ["Dominica","DM","+1"],["Dominican Republic","DO","+1"],["Ecuador","EC","+593"],["Egypt","EG","+20"],
-    ["El Salvador","SV","+503"],["Equatorial Guinea","GQ","+240"],["Eritrea","ER","+291"],["Estonia","EE","+372"],
-    ["Eswatini","SZ","+268"],["Ethiopia","ET","+251"],["Fiji","FJ","+679"],["Finland","FI","+358"],
-    ["France","FR","+33"],["Gabon","GA","+241"],["Gambia","GM","+220"],["Georgia","GE","+995"],
-    ["Germany","DE","+49"],["Ghana","GH","+233"],["Greece","GR","+30"],["Grenada","GD","+1"],
-    ["Guatemala","GT","+502"],["Guinea","GN","+224"],["Guinea-Bissau","GW","+245"],["Guyana","GY","+592"],
-    ["Haiti","HT","+509"],["Honduras","HN","+504"],["Hungary","HU","+36"],["Iceland","IS","+354"],
-    ["India","IN","+91"],["Indonesia","ID","+62"],["Iran","IR","+98"],["Iraq","IQ","+964"],
-    ["Ireland","IE","+353"],["Israel","IL","+972"],["Italy","IT","+39"],["Jamaica","JM","+1"],
-    ["Japan","JP","+81"],["Jordan","JO","+962"],["Kazakhstan","KZ","+7"],["Kenya","KE","+254"],
-    ["Kiribati","KI","+686"],["Kosovo","XK","+383"],["Kuwait","KW","+965"],["Kyrgyzstan","KG","+996"],
-    ["Laos","LA","+856"],["Latvia","LV","+371"],["Lebanon","LB","+961"],["Lesotho","LS","+266"],
-    ["Liberia","LR","+231"],["Libya","LY","+218"],["Liechtenstein","LI","+423"],["Lithuania","LT","+370"],
-    ["Luxembourg","LU","+352"],["Madagascar","MG","+261"],["Malawi","MW","+265"],["Malaysia","MY","+60"],
-    ["Maldives","MV","+960"],["Mali","ML","+223"],["Malta","MT","+356"],["Marshall Islands","MH","+692"],
-    ["Mauritania","MR","+222"],["Mauritius","MU","+230"],["Mexico","MX","+52"],["Micronesia","FM","+691"],
-    ["Moldova","MD","+373"],["Monaco","MC","+377"],["Mongolia","MN","+976"],["Montenegro","ME","+382"],
-    ["Morocco","MA","+212"],["Mozambique","MZ","+258"],["Myanmar","MM","+95"],["Namibia","NA","+264"],
-    ["Nauru","NR","+674"],["Nepal","NP","+977"],["Netherlands","NL","+31"],["New Zealand","NZ","+64"],
-    ["Nicaragua","NI","+505"],["Niger","NE","+227"],["Nigeria","NG","+234"],["North Korea","KP","+850"],
-    ["North Macedonia","MK","+389"],["Norway","NO","+47"],["Oman","OM","+968"],["Pakistan","PK","+92"],
-    ["Palau","PW","+680"],["Palestine","PS","+970"],["Panama","PA","+507"],["Papua New Guinea","PG","+675"],
-    ["Paraguay","PY","+595"],["Peru","PE","+51"],["Philippines","PH","+63"],["Poland","PL","+48"],
-    ["Portugal","PT","+351"],["Qatar","QA","+974"],["Romania","RO","+40"],["Russia","RU","+7"],
-    ["Rwanda","RW","+250"],["Saint Kitts and Nevis","KN","+1"],["Saint Lucia","LC","+1"],["Saint Vincent and the Grenadines","VC","+1"],
-    ["Samoa","WS","+685"],["San Marino","SM","+378"],["Sao Tome and Principe","ST","+239"],["Saudi Arabia","SA","+966"],
-    ["Senegal","SN","+221"],["Serbia","RS","+381"],["Seychelles","SC","+248"],["Sierra Leone","SL","+232"],
-    ["Singapore","SG","+65"],["Slovakia","SK","+421"],["Slovenia","SI","+386"],["Solomon Islands","SB","+677"],
-    ["Somalia","SO","+252"],["South Africa","ZA","+27"],["South Korea","KR","+82"],["South Sudan","SS","+211"],
-    ["Spain","ES","+34"],["Sri Lanka","LK","+94"],["Sudan","SD","+249"],["Suriname","SR","+597"],
-    ["Sweden","SE","+46"],["Switzerland","CH","+41"],["Syria","SY","+963"],["Taiwan","TW","+886"],
-    ["Tajikistan","TJ","+992"],["Tanzania","TZ","+255"],["Thailand","TH","+66"],["Timor-Leste","TL","+670"],
-    ["Togo","TG","+228"],["Tonga","TO","+676"],["Trinidad and Tobago","TT","+1"],["Tunisia","TN","+216"],
-    ["Turkey","TR","+90"],["Turkmenistan","TM","+993"],["Tuvalu","TV","+688"],["Uganda","UG","+256"],
-    ["Ukraine","UA","+380"],["United Arab Emirates","AE","+971"],["United Kingdom","GB","+44"],["United States","US","+1"],
-    ["Uruguay","UY","+598"],["Uzbekistan","UZ","+998"],["Vanuatu","VU","+678"],["Vatican City","VA","+39"],
-    ["Venezuela","VE","+58"],["Vietnam","VN","+84"],["Yemen","YE","+967"],["Zambia","ZM","+260"],["Zimbabwe","ZW","+263"]
-  ];
-
-  // ── Build the country dropdown (Mexico preselected) ──
-  function buildCountries() {
-    const sel = document.getElementById('countrySelect');
-    sel.innerHTML = '';
-    COUNTRIES.forEach(([name, iso, dial]) => {
-      const o = document.createElement('option');
-      o.value = name;
-      o.textContent = name;
-      o.dataset.dial = dial;
-      if (name === 'Mexico') o.selected = true;
-      sel.appendChild(o);
-    });
-  }
-
-  // ── Adapt phone dial code + address labels by country ──
-  function applyCountry() {
-    const sel  = document.getElementById('countrySelect');
-    const opt  = sel.options[sel.selectedIndex];
-    const dial = (opt && opt.dataset.dial) || '+52';
-    document.getElementById('dialPrefix').textContent = dial;
-
-    const isUS = (sel.value === 'United States');
-    const stateLabel = document.getElementById('stateLabel');
-    const stateInput = document.getElementById('stateInput');
-    const zipLabel   = document.getElementById('zipLabel');
-    const zipInput   = document.getElementById('zipInput');
-    if (isUS) {
-      stateLabel.textContent = 'State';
-      stateInput.setAttribute('maxlength', '2');
-      stateInput.placeholder = 'TX';
-      zipLabel.textContent   = 'Zip Code';
-      zipInput.placeholder   = '77001';
-    } else {
-      stateLabel.textContent = 'State / Province';
-      stateInput.removeAttribute('maxlength');
-      stateInput.placeholder = 'e.g. Jalisco';
-      zipLabel.textContent   = 'Postal Code';
-      zipInput.placeholder   = '00000';
-    }
-  }
-
-  // ── Init: build countries (Mexico default) + set dial/labels ──
-  buildCountries();
-  applyCountry();
-
-  // ── Init: hide conditional fields until a type is chosen ──
-  document.querySelectorAll('.lo-only, .staff-only').forEach(el => el.style.display = 'none');
 
   document.getElementById('submitBtn').addEventListener('click', async () => {
     if (!validatePage(4)) return;
@@ -943,7 +701,7 @@
     const form = document.getElementById('loForm');
 
     for (const el of form.elements) {
-      if (!el.name || el.name.startsWith('_') || !el.value.trim()) continue;
+      if (!el.name || !el.value.trim()) continue;
       if (el.name === 'NMLS #') {
         fields[el.name] = parseInt(el.value, 10);
       } else {
@@ -951,22 +709,11 @@
       }
     }
 
-    // Prefix the phone number with the country dial code
-    const phoneVal = document.getElementById('phoneInput').value.trim();
-    if (phoneVal) {
-      const dial = document.getElementById('dialPrefix').textContent.trim();
-      fields['Teléfono'] = phoneVal.startsWith('+') ? phoneVal : `${dial} ${phoneVal}`;
-    }
-
-    // Roles array drives Airtable permissions/views
-    const mt = document.getElementById('memberType').value;
-    fields['Roles'] = [ mt === 'LO' ? 'LO' : 'Staff' ];
-
     // Upload photo to Google Drive (if a file was selected)
     const photoFile = document.getElementById('photoInput').files[0];
     if (photoFile) {
       btn.textContent = 'Uploading photo…';
-      const driveUrl = await uploadPhotoToDrive(photoFile, fields['Nombre completo']);
+      const driveUrl = await uploadPhotoToDrive(photoFile, fields['Nombre Completo']);
       if (driveUrl) fields['Foto (enlace)'] = driveUrl;
     }
 
