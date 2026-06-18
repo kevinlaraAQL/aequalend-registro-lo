@@ -696,10 +696,10 @@
     btn.textContent = 'Submitting…';
     errorMsg.style.display = 'none';
 
-    // Map each form field (by its name) to a column in the shared `staff` table
+    // Map each form field (by its name) to a column in the lo_onboarding table
     const COLUMN_MAP = {
       'Nombre completo':     'name',
-      'Rol':                 'title',
+      'Rol':                 'role',
       'NMLS #':              'nmls',
       'Email personal':      'email',
       'Teléfono':            'phone',
@@ -719,8 +719,7 @@
     };
 
     // Build the row to insert (only non-empty values; empty dates must be omitted)
-    // member_group / role mark these records as Loan Officers in the shared table.
-    const row = { status: 'Activo', member_group: 'Loan Officer', role: 'Loan Officer' };
+    const row = { status: 'Activo' };
     const form = document.getElementById('loForm');
 
     for (const el of form.elements) {

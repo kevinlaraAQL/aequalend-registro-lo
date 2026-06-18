@@ -13,7 +13,7 @@ exports.handler = async (event) => {
 
   const SUPABASE_URL = process.env.SUPABASE_URL;          // https://xxxx.supabase.co
   const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;  // service_role key (secreta)
-  const TABLE        = 'staff';                           // tabla unificada (staff + LOs)
+  const TABLE        = 'lo_onboarding';                   // tabla dedicada de onboarding de LOs
 
   if (!SUPABASE_URL || !SERVICE_KEY) {
     return {
