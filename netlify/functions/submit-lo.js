@@ -1,7 +1,8 @@
 /**
  * Aequalend — LO Onboarding Form Submission
- * Receives form data from the HTML form and sends it to Airtable.
- * The Airtable token lives in Netlify environment variables (never in the HTML).
+ * Receives form data from the HTML form and inserts it into Supabase.
+ * The Supabase URL and service_role key live in Netlify environment variables
+ * (SUPABASE_URL / SUPABASE_SERVICE_KEY) — never in the HTML.
  */
 
 exports.handler = async (event) => {
@@ -10,27 +11,29 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
-  const BASE_ID        = 'appJkLG6dpvfMPygE';
-  const TABLE_ID       = 'tblM736DaUWGS1frv';
+  const SUPABASE_URL = process.env.SUPABASE_URL;          // https://xxxx.supabase.co
+  const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;  // service_role key (secreta)
+  const TABLE        = 'loan_officers';                   // tabla en Supabase
 
-  if (!AIRTABLE_TOKEN) {
+  if (!SUPABASE_URL || !SERVICE_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Missing AIRTABLE_TOKEN environment variable' })
+      body: JSON.stringify({ error: 'Missing SUPABASE_URL or SUPABASE_SERVICE_KEY environment variable' })
     };
   }
 
   try {
-    const { fields } = JSON.parse(event.body);
+    const { row } = JSON.parse(event.body);
 
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json'
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ fields })
+      body: JSON.stringify(row)
     });
 
     const data = await res.json();

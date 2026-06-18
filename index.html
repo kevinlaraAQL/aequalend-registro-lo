@@ -696,25 +696,44 @@
     btn.textContent = 'Submitting…';
     errorMsg.style.display = 'none';
 
-    // Collect all fields
-    const fields = { Estado: 'Activo' };
+    // Map each form field (by its name) to a column in the loan_officers table
+    const COLUMN_MAP = {
+      'Nombre completo':     'name',
+      'Rol':                 'role',
+      'NMLS #':              'nmls',
+      'Email personal':      'email',
+      'Teléfono':            'phone',
+      'Fecha de nacimiento': 'birth_date',
+      'Fecha de ingreso':    'start_date',
+      'Licensed States':     'licensed_states',
+      'Street Address':      'street_address',
+      'City':                'city',
+      'State':               'state',
+      'Zip Code':            'zip_code',
+      'LinkedIn':            'linkedin',
+      'Instagram':           'instagram',
+      'Facebook':            'facebook',
+      'TikTok':              'tiktok',
+      'Bio':                 'bio',
+      'Shirt Size':          'shirt_size'
+    };
+
+    // Build the row to insert (only non-empty values; empty dates must be omitted)
+    const row = { status: 'Activo' };
     const form = document.getElementById('loForm');
 
     for (const el of form.elements) {
-      if (!el.name || !el.value.trim()) continue;
-      if (el.name === 'NMLS #') {
-        fields[el.name] = parseInt(el.value, 10);
-      } else {
-        fields[el.name] = el.value.trim();
-      }
+      const col = COLUMN_MAP[el.name];
+      if (!col || !el.value.trim()) continue;
+      row[col] = el.value.trim();
     }
 
     // Upload photo to Google Drive (if a file was selected)
     const photoFile = document.getElementById('photoInput').files[0];
     if (photoFile) {
       btn.textContent = 'Uploading photo…';
-      const driveUrl = await uploadPhotoToDrive(photoFile, fields['Nombre Completo']);
-      if (driveUrl) fields['Foto (enlace)'] = driveUrl;
+      const driveUrl = await uploadPhotoToDrive(photoFile, row['name']);
+      if (driveUrl) row['photo_url'] = driveUrl;
     }
 
     btn.textContent = 'Submitting…';
@@ -723,7 +742,7 @@
       const res = await fetch('/.netlify/functions/submit-lo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fields })
+        body: JSON.stringify({ row })
       });
 
       if (res.ok) {
