@@ -383,7 +383,7 @@
 
       <div class="field">
         <label>Full Name <span class="req">*</span></label>
-        <input type="text" name="Nombre completo" placeholder="e.g. María García" required>
+        <input type="text" name="Nombre completo" id="nameInput" placeholder="e.g. María García" required>
       </div>
 
       <div class="row">
@@ -412,6 +412,7 @@
         <div class="field">
           <label>Personal Email <span class="req">*</span></label>
           <input type="email" name="Email personal" placeholder="you@email.com" required>
+          <small id="assignedEmail" style="display:none;margin-top:6px;font-size:12px;color:#0C2139;font-weight:600;"></small>
         </div>
         <div class="field">
           <label>Phone <span class="req">*</span></label>
@@ -601,6 +602,28 @@
     document.getElementById('photoStatus').style.display = 'none';
   });
 
+  // ── Corporate email = first initial + last name @aequalend.com ──
+  function corporateEmail(fullName) {
+    const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '';
+    const strip = (s) => s.normalize('NFD').replace(/[^a-zA-Z]/g, '').toLowerCase();
+    const initial = strip(parts[0]).charAt(0);
+    const last = strip(parts[parts.length - 1]);
+    return (initial && last) ? initial + last + '@aequalend.com' : '';
+  }
+  (function () {
+    const nameEl = document.getElementById('nameInput');
+    const out = document.getElementById('assignedEmail');
+    if (!nameEl || !out) return;
+    const upd = () => {
+      const e = corporateEmail(nameEl.value);
+      out.textContent = e ? ('Your assigned Aequalend email: ' + e) : '';
+      out.style.display = e ? 'block' : 'none';
+    };
+    nameEl.addEventListener('input', upd);
+    upd();
+  })();
+
   // ── Convert file to base64 ──
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -701,7 +724,7 @@
       'Nombre completo':     'name',
       'Rol':                 'role',
       'NMLS #':              'nmls',
-      'Email personal':      'email',
+      'Email personal':      'personal_email',
       'Teléfono':            'phone',
       'Fecha de nacimiento': 'birth_date',
       'Fecha de ingreso':    'start_date',
@@ -727,6 +750,10 @@
       if (!col || !el.value.trim()) continue;
       row[col] = el.value.trim();
     }
+
+    // The corporate email shown in My AQL is auto-assigned from the name;
+    // the email they typed stays as their personal email.
+    row.email = corporateEmail(row.name) || row.personal_email || '';
 
     // Upload photo to Google Drive (if a file was selected)
     const photoFile = document.getElementById('photoInput').files[0];
