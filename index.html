@@ -96,6 +96,21 @@
     label .req { color: #BAD534; margin-left: 2px; }
     label .opt { color: #797979; font-weight: 400; font-size: 12px; margin-left: 4px; }
 
+    /* The line under a label that says what the answer is FOR. Added with the
+       second round of questions: "office address" and "licensed states" both
+       read as paperwork until you know one becomes a map on your page and the
+       other decides who gets sent your way. */
+    .hint { color: #797979; font-size: 12.5px; line-height: 1.45; margin: -2px 0 8px; }
+    .same-as { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 400; margin-bottom: 8px; cursor: pointer; }
+    .same-as input { width: 16px; height: 16px; accent-color: #BAD534; }
+    .langs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .lang { display: flex; align-items: center; gap: 7px; border: 1px solid #E6E8EB; border-radius: 10px; padding: 9px 12px; font-size: 14px; cursor: pointer; }
+    .lang input { width: 16px; height: 16px; accent-color: #BAD534; }
+    .lang:has(input:checked) { border-color: #BAD534; background: rgba(186,213,52,.12); }
+    .choice { display: flex; gap: 8px; margin-bottom: 10px; }
+    .choice button { flex: 1; border: 1px solid #E6E8EB; background: #fff; border-radius: 10px; padding: 9px 12px; font-size: 13.5px; font-family: inherit; cursor: pointer; }
+    .choice button.on { border-color: #0C223B; background: #0C223B; color: #fff; font-weight: 600; }
+
     input[type="text"],
     input[type="email"],
     input[type="tel"],
@@ -433,7 +448,8 @@
 
       <div class="field">
         <label>Licensed States <span class="opt">optional</span></label>
-        <input type="text" name="Licensed States" placeholder="e.g. TX, FL, CA">
+        <input type="text" name="Licensed States" placeholder="e.g. Texas, Florida, California">
+        <div class="hint">Full names, separated by commas. This is what tells a visitor asking &ldquo;do you lend in my state?&rdquo; to be sent to you.</div>
       </div>
 
       <div class="field">
@@ -473,17 +489,30 @@
 
       <div class="row-3">
         <div class="field">
-          <label>City</label>
+          <label>City <span class="opt">optional</span></label>
           <input type="text" name="City" placeholder="Houston">
         </div>
         <div class="field">
-          <label>State</label>
+          <label>State <span class="opt">optional</span></label>
           <input type="text" name="State" placeholder="TX" maxlength="2">
         </div>
         <div class="field">
-          <label>Zip Code</label>
+          <label>Zip Code <span class="opt">optional</span></label>
           <input type="text" name="Zip Code" placeholder="77001">
         </div>
+      </div>
+
+      <!-- The office is a different question from the mailing address, and the
+           difference matters: this one is PUBLISHED, as a map link on your page.
+           It may well be the same address, which is why the box says so and
+           fills itself in rather than asking you to type it twice. -->
+      <div class="field">
+        <label>Office Address <span class="opt">optional</span></label>
+        <div class="hint">This one is public: it becomes a map link on your page. Leave it empty if you do not meet clients at an office.</div>
+        <label class="same-as">
+          <input type="checkbox" id="sameAsMailing"> Same as my mailing address
+        </label>
+        <input type="text" name="Office Address" id="officeAddress" placeholder="500 Main St, Suite 200, Houston, TX 77002">
       </div>
 
       <div class="nav">
@@ -533,8 +562,56 @@
       <div class="page-title">Almost Ready!</div>
 
       <div class="field">
-        <label>Bio <span class="opt">optional</span></label>
+        <label>Bio &middot; English <span class="opt">optional</span></label>
         <textarea name="Bio" placeholder="Tell us a little about yourself, your experience, and what you love about this industry…"></textarea>
+      </div>
+
+      <!-- Not a translation of the box above: an officer who works in Spanish
+           writes differently in it, and their page shows whichever one the
+           visitor picked. Filling it is what turns the EN/ES switch on. -->
+      <div class="field">
+        <label>Bio &middot; Espa&ntilde;ol <span class="opt">optional</span></label>
+        <div class="hint">Write it and your page gets an English / Spanish switch. It does not have to be a translation.</div>
+        <textarea name="Bio ES" placeholder="Cu&eacute;ntanos de ti, tu experiencia y lo que m&aacute;s te gusta de este trabajo…"></textarea>
+      </div>
+
+      <!-- Under their name on the public card, and how somebody who wants to be
+           helped in Spanish picks who to call. The profile has always had this
+           field; nothing was ever asked for it. -->
+      <div class="field">
+        <label>Languages you work in</label>
+        <div class="langs">
+          <label class="lang"><input type="checkbox" class="langBox" value="English" checked> English</label>
+          <label class="lang"><input type="checkbox" class="langBox" value="Spanish"> Spanish</label>
+          <label class="lang"><input type="checkbox" class="langBox" value="Portuguese"> Portuguese</label>
+          <label class="lang"><input type="checkbox" class="langBox" value="Mandarin"> Mandarin</label>
+        </div>
+        <input type="text" id="langOther" placeholder="Another language? Type it here" style="margin-top:8px">
+      </div>
+
+      <div class="field">
+        <label>Booking Link <span class="opt">optional</span></label>
+        <div class="hint">Your Google appointment page. In Google Calendar, create an Appointment schedule and paste its link here. Without it, the &ldquo;Book an appointment&rdquo; button stays hidden on your page.</div>
+        <input type="text" name="Calendar URL" placeholder="https://calendar.app.google/…">
+      </div>
+
+      <!-- Two ways in, because not every officer has a YouTube channel and not
+           every phone clip belongs on one. -->
+      <div class="field">
+        <label>Intro Video <span class="opt">optional</span></label>
+        <div class="hint">Sixty to ninety seconds, filmed on your phone is fine. Paste a link, or upload the file itself.</div>
+        <div class="choice">
+          <button type="button" id="videoTabLink" class="on" onclick="pickVideoWay('link')">Paste a link</button>
+          <button type="button" id="videoTabFile" onclick="pickVideoWay('file')">Upload a file</button>
+        </div>
+        <div id="videoLinkWrap">
+          <input type="text" name="Intro Video" placeholder="YouTube, Vimeo or Google Drive link">
+        </div>
+        <div id="videoFileWrap" style="display:none">
+          <input type="file" id="videoInput" accept="video/*">
+          <div class="hint" style="margin-top:6px">Up to 40 MB. Longer than that, put it on Drive or YouTube and paste the link instead.</div>
+          <div class="photo-status" id="videoStatus" style="display:none"></div>
+        </div>
       </div>
 
       <div class="field">
@@ -634,17 +711,19 @@
     });
   }
 
-  // ── Upload photo to Google Drive via Apps Script ──
-  async function uploadPhotoToDrive(file, loName) {
+  // ── Upload a file to Google Drive via Apps Script ──
+  //  One function for the headshot and the intro video: same road, same failure
+  //  handling, and a new kind of file later needs no second copy of it.
+  async function uploadFileToDrive(file, loName, suffix, statusId, what) {
     if (!GAS_ENDPOINT) return null;
-    const status = document.getElementById('photoStatus');
+    const status = document.getElementById(statusId);
     status.className = 'photo-status uploading';
-    status.textContent = 'Uploading photo…';
+    status.textContent = 'Uploading ' + what + '…';
     status.style.display = 'block';
     try {
       const b64  = await fileToBase64(file);
       const ext  = file.name.split('.').pop();
-      const name = (loName || 'headshot').replace(/\s+/g, '_') + '_headshot.' + ext;
+      const name = (loName || suffix).replace(/\s+/g, '_') + '_' + suffix + '.' + ext;
       const res  = await fetch(GAS_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
@@ -653,18 +732,57 @@
       const data = await res.json();
       if (data.success) {
         status.className  = 'photo-status done';
-        status.textContent = '✓ Photo uploaded';
+        status.textContent = '✓ ' + what.charAt(0).toUpperCase() + what.slice(1) + ' uploaded';
         return data.url;
       } else {
         throw new Error(data.error || 'Upload failed');
       }
     } catch (err) {
       status.className  = 'photo-status error';
-      status.textContent = 'Photo upload failed — form will submit without it.';
+      status.textContent = what.charAt(0).toUpperCase() + what.slice(1) + ' upload failed — the form will submit without it.';
       console.error('Drive upload error:', err);
       return null;
     }
   }
+
+  const uploadPhotoToDrive = (file, loName) =>
+    uploadFileToDrive(file, loName, 'headshot', 'photoStatus', 'photo');
+
+  // Which way they are giving us the video. The two live in the same field so
+  // only one of them can arrive, and the one on screen is the one that counts.
+  function pickVideoWay(way) {
+    const link = way === 'link';
+    document.getElementById('videoTabLink').classList.toggle('on', link);
+    document.getElementById('videoTabFile').classList.toggle('on', !link);
+    document.getElementById('videoLinkWrap').style.display = link ? '' : 'none';
+    document.getElementById('videoFileWrap').style.display = link ? 'none' : '';
+    if (link) document.getElementById('videoInput').value = '';
+    else document.querySelector('[name="Intro Video"]').value = '';
+  }
+
+  // The office is usually the same place, and typing an address twice is how
+  // one of the two ends up wrong.
+  document.addEventListener('DOMContentLoaded', function () {
+    const box = document.getElementById('sameAsMailing');
+    if (!box) return;
+    const office = document.getElementById('officeAddress');
+    const parts = () => {
+      const get = (n) => (document.querySelector('[name="' + n + '"]').value || '').trim();
+      const street = get('Street Address'), city = get('City'), st = get('State'), zip = get('Zip Code');
+      const tail = [city, [st, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      return [street, tail].filter(Boolean).join(', ');
+    };
+    const sync = () => { if (box.checked) office.value = parts(); };
+    box.addEventListener('change', () => {
+      office.readOnly = box.checked;
+      sync();
+      if (!box.checked) office.focus();
+    });
+    ['Street Address', 'City', 'State', 'Zip Code'].forEach((n) => {
+      const el = document.querySelector('[name="' + n + '"]');
+      if (el) el.addEventListener('input', sync);
+    });
+  });
 
   let currentPage = 1;
   const totalPages = 4;
@@ -738,7 +856,13 @@
       'Facebook':            'facebook',
       'TikTok':              'tiktok',
       'Bio':                 'bio',
-      'Shirt Size':          'shirt_size'
+      'Shirt Size':          'shirt_size',
+      // The second round. Every one of these fills a field the profile already
+      // had and nobody was filling.
+      'Bio ES':              'bio_es',
+      'Calendar URL':        'calendar_url',
+      'Office Address':      'office_address',
+      'Intro Video':         'intro_video_url'
     };
 
     // Build the row to insert (only non-empty values; empty dates must be omitted)
@@ -755,12 +879,39 @@
     // the email they typed stays as their personal email.
     row.email = corporateEmail(row.name) || row.personal_email || '';
 
+    // Languages are boxes, not a text field, so they are gathered by hand and
+    // joined the way the profile stores them.
+    const langs = Array.from(document.querySelectorAll('.langBox:checked')).map(b => b.value);
+    const otherLang = (document.getElementById('langOther').value || '').trim();
+    if (otherLang) langs.push(otherLang);
+    if (langs.length) row.languages = langs.join(', ');
+
     // Upload photo to Google Drive (if a file was selected)
     const photoFile = document.getElementById('photoInput').files[0];
     if (photoFile) {
       btn.textContent = 'Uploading photo…';
       const driveUrl = await uploadPhotoToDrive(photoFile, row['name']);
       if (driveUrl) row['photo_url'] = driveUrl;
+    }
+
+    // A video they uploaded rather than linked. Same road as the headshot, and
+    // the same limit: the file is base64'd into one request, so a phone clip
+    // longer than about a minute has to arrive as a link instead. Said out loud
+    // in the form rather than discovered here.
+    const videoFile = document.getElementById('videoInput').files[0];
+    if (videoFile && !row['intro_video_url']) {
+      if (videoFile.size > 40 * 1024 * 1024) {
+        const vs = document.getElementById('videoStatus');
+        vs.className = 'photo-status error';
+        vs.style.display = 'block';
+        vs.textContent = 'That video is over 40 MB — put it on Drive or YouTube and paste the link.';
+        btn.disabled = false;
+        btn.textContent = 'Submit ✓';
+        return;
+      }
+      btn.textContent = 'Uploading video…';
+      const videoUrl = await uploadFileToDrive(videoFile, row['name'], 'intro', 'videoStatus', 'video');
+      if (videoUrl) row['intro_video_url'] = videoUrl;
     }
 
     btn.textContent = 'Submitting…';
