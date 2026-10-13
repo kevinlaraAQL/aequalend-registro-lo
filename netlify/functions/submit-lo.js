@@ -9,7 +9,8 @@
  *   - only the form's own fields are kept; anything else is dropped (including
  *     the columns My AQL uses to track the row, like applied_at),
  *   - the Aequalend email is worked out here from the name, the same way the
- *     form shows it, so nobody can pick an address.
+ *     form shows it, and only used if nobody already has it. Nobody can pick
+ *     an address, nor take a real employee's.
  */
 
 // The columns the form fills. Nothing else reaches the table.
@@ -39,6 +40,32 @@ function webLink(v) {
   if (/^https?:\/\/\S+$/i.test(v)) return v;
   if (/^[a-z][a-z0-9+.-]*:/i.test(v) || /\s/.test(v)) return '';
   return 'https://' + v;
+}
+
+// The Aequalend address is how My AQL tells people apart: company directory,
+// the name and photo at the top of the app, email signatures. A stranger who
+// types "Sandra Estrella" must not get sestrella@aequalend.com and take her
+// place. So it is filled only when NOBODY in the system has it yet; otherwise
+// the row comes in without one and an admin sets it in Admin > People. If the
+// check itself fails, it is left blank too: blank is safe, a wrong owner is not.
+async function freeCorporateEmail(name, url, key, tables) {
+  const computed = corporateEmail(name);
+  if (!computed) return '';
+  // computed is only letters, one @ and dots, so ilike is an exact,
+  // case-insensitive match here (no % or _ wildcards possible).
+  const q = encodeURIComponent(computed);
+  const headers = { apikey: key, Authorization: `Bearer ${key}` };
+  try {
+    const taken = await Promise.all(tables.map(async (t) => {
+      const r = await fetch(`${url}/rest/v1/${t}?select=email&email=ilike.${q}&limit=1`, { headers });
+      if (!r.ok) return true;
+      const rows = await r.json();
+      return !Array.isArray(rows) || rows.length > 0;
+    }));
+    return taken.some(Boolean) ? '' : computed;
+  } catch {
+    return '';
+  }
 }
 
 function json(statusCode, body) {
@@ -85,7 +112,7 @@ exports.handler = async (event) => {
     if (row[key]) row[key] = webLink(row[key]);
     if (!row[key]) delete row[key];
   }
-  row.email = corporateEmail(row.name) || row.personal_email || '';
+  row.email = await freeCorporateEmail(row.name, SUPABASE_URL, SERVICE_KEY, ['lo_onboarding', 'loan_officers', 'staff', 'profiles']);
 
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {

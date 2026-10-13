@@ -694,7 +694,7 @@
     if (!nameEl || !out) return;
     const upd = () => {
       const e = corporateEmail(nameEl.value);
-      out.textContent = e ? ('Your assigned Aequalend email: ' + e) : '';
+      out.textContent = e ? ('Your Aequalend email will usually be: ' + e + ' (the team confirms it)') : '';
       out.style.display = e ? 'block' : 'none';
     };
     nameEl.addEventListener('input', upd);
