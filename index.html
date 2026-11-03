@@ -238,6 +238,70 @@
       line-height: 1.6;
     }
 
+    /* The step after "you're all set": the team app on their phone, asked for
+       while they are still here rather than in an email they may never open.
+       Many people finish this form on a phone, so the button is the way in and
+       it is sized for a thumb. It borrows .btn and .btn-next so it looks like
+       every other button they just pressed. */
+    .success-screen .success-divider {
+      border: 0;
+      border-top: 1.5px solid #c8c8c8;
+      max-width: 360px;
+      margin: 32px auto 28px;
+    }
+    .success-screen .next-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0C223B;
+      line-height: 1.4;
+      text-wrap: balance;
+      margin-bottom: 6px;
+    }
+    .success-screen .btn-guide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+      min-height: 56px;
+      margin: 22px auto 0;
+      padding: 16px 24px;
+      font-size: 17px;
+      text-decoration: none;
+    }
+    .success-screen .btn-guide svg { margin: 0; flex-shrink: 0; }
+
+    /* The QR code is for whoever finished on a computer: it carries the same
+       page to their phone without typing an address. Shown only on a wide
+       screen run by a mouse or trackpad, which is what a computer is. Width
+       alone would also show it on a phone turned sideways, and a phone cannot
+       scan its own screen. */
+    .success-screen .success-qr { display: none; margin-top: 28px; }
+    @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+      .success-screen .success-qr { display: block; }
+    }
+    /* Square on purpose: rounding an image clips its corners, and those are
+       where a QR code keeps the three squares a camera looks for. The frame is
+       a shadow, not a border, so the picture stays a full 160px. */
+    .success-screen .success-qr img {
+      display: block;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+      box-shadow: 0 0 0 1px #E6E8EB;
+    }
+    .success-screen .success-qr figcaption {
+      color: #797979;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .success-screen .success-note {
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 28px;
+    }
+
     /* ── Banner ── */
     .banner {
       width: 100%;
@@ -654,6 +718,33 @@
     </svg>
     <h2>You're all set!</h2>
     <p>Welcome to the Aequalend team.<br>We'll be in touch soon with your next steps.</p>
+
+    <!-- The guide is a page in My AQL rather than text here, so it can be
+         corrected without republishing this form. A new tab keeps this
+         confirmation open behind it. -->
+    <hr class="success-divider">
+    <h3 class="next-title">While you wait: put My AQL, the team app, on your phone.</h3>
+    <p>It takes about 2 minutes.</p>
+    <a class="btn btn-next btn-guide" href="https://myaql.aequalend.com/start" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+        <path d="M12 18h.01"/>
+      </svg>
+      Open the setup guide
+    </a>
+
+    <!-- If the picture cannot be loaded, the whole box goes rather than leaving
+         a broken image above an instruction to scan it. -->
+    <figure class="success-qr">
+      <img src="https://myaql.aequalend.com/start/qr.png" width="160" height="160" alt="QR code that opens the setup guide" onerror="this.parentNode.style.display='none'">
+      <figcaption>Scan this with your phone's camera.</figcaption>
+    </figure>
+
+    <!-- Written out, for whoever opened this form from a link inside an app:
+         that browser cannot add anything to a Home Screen, and the address
+         typed into Safari or Chrome is the way out. -->
+    <p class="success-note">On your phone, you can also type <strong>myaql.aequalend.com/start</strong> into Safari or Chrome.</p>
+    <p class="success-note" style="margin-top:10px">No @aequalend.com account yet? Add the app now and sign in once you have it.</p>
   </div>
 
   <p class="footer" id="footerNote"></p>
